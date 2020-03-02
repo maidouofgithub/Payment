@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,13 +10,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 图像文件名称
         /// </summary>
-        [JsonProperty("image_name")]
+        [JsonPropertyName("image_name")]
         public string ImageName { get; set; }
 
         /// <summary>
         /// 图像文件在存储上的路径
         /// </summary>
-        [JsonProperty("image_path")]
+        [JsonPropertyName("image_path")]
         public string ImagePath { get; set; }
     }
 }

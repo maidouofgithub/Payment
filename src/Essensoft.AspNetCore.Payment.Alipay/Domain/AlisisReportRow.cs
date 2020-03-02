@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,7 +11,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 报表行信息，每个对象是一列的数据
         /// </summary>
-        [JsonProperty("row_data")]
+        [JsonPropertyName("row_data")]
         public List<AlisisReportColumn> RowData { get; set; }
     }
 }

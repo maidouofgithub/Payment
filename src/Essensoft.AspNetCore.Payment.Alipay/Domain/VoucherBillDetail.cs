@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -8,45 +8,45 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
     public class VoucherBillDetail : AlipayObject
     {
         /// <summary>
-        /// 券核销/退款金额
+        /// 券核销/退款金额(元)
         /// </summary>
-        [JsonProperty("amount")]
-        public long Amount { get; set; }
+        [JsonPropertyName("amount")]
+        public string Amount { get; set; }
 
         /// <summary>
         /// 账单类型(V_USE:支付,V_REFUND:退款)
         /// </summary>
-        [JsonProperty("biz_type")]
+        [JsonPropertyName("biz_type")]
         public string BizType { get; set; }
 
         /// <summary>
         /// 交易时间
         /// </summary>
-        [JsonProperty("gmt_create")]
+        [JsonPropertyName("gmt_create")]
         public string GmtCreate { get; set; }
 
         /// <summary>
         /// 交易合作伙伴ID
         /// </summary>
-        [JsonProperty("partner_id")]
+        [JsonPropertyName("partner_id")]
         public string PartnerId { get; set; }
 
         /// <summary>
         /// 商户名称
         /// </summary>
-        [JsonProperty("partner_name")]
+        [JsonPropertyName("partner_name")]
         public string PartnerName { get; set; }
 
         /// <summary>
         /// 交易状态(I: 处理中, S: 成功)
         /// </summary>
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; }
 
         /// <summary>
         /// 支付宝交易号
         /// </summary>
-        [JsonProperty("trade_no")]
+        [JsonPropertyName("trade_no")]
         public string TradeNo { get; set; }
     }
 }

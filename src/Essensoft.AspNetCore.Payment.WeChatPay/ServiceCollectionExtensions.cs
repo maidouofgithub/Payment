@@ -1,5 +1,7 @@
+﻿using System;
 using Essensoft.AspNetCore.Payment.WeChatPay;
-using System;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -8,15 +10,24 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddWeChatPay(
             this IServiceCollection services)
         {
-            services.AddWeChatPay(setupAction: null);
+            services.AddWeChatPay(null);
         }
 
         public static void AddWeChatPay(
             this IServiceCollection services,
             Action<WeChatPayOptions> setupAction)
         {
-            services.AddSingleton<WeChatPayClient>();
-            services.AddSingleton<WeChatPayNotifyClient>();
+            services.AddHttpClient(nameof(WeChatPayClient));
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpMessageHandlerBuilderFilter, WeChatPayHandlerBuilderFilter>());
+
+            services.AddSingleton<WeChatPayCertificateManager>();
+            services.AddSingleton<IWeChatPayClient, WeChatPayClient>();
+
+#if NETCOREAPP3_1
+            services.AddSingleton<IWeChatPayNotifyClient, WeChatPayNotifyClient>();
+#endif
+
             if (setupAction != null)
             {
                 services.Configure(setupAction);

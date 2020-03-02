@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Essensoft.AspNetCore.Payment.Alipay.Domain;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Response
@@ -12,13 +12,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Response
         /// <summary>
         /// 签约订单id，关联了若干个签约任务id。
         /// </summary>
-        [JsonProperty("order_id")]
+        [JsonPropertyName("order_id")]
         public string OrderId { get; set; }
 
         /// <summary>
         /// 签约认证任务列表
         /// </summary>
-        [JsonProperty("task_list")]
+        [JsonPropertyName("task_list")]
         public List<SignTaskResult> TaskList { get; set; }
     }
 }

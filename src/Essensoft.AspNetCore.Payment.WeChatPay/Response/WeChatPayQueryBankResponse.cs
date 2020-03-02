@@ -2,8 +2,45 @@
 
 namespace Essensoft.AspNetCore.Payment.WeChatPay.Response
 {
+    [XmlRoot("xml")]
     public class WeChatPayQueryBankResponse : WeChatPayResponse
     {
+        /// <summary>
+        /// 返回状态码
+        /// </summary>
+        [XmlElement("return_code")]
+        public string ReturnCode { get; set; }
+
+        /// <summary>
+        /// 返回信息
+        /// </summary>
+        [XmlElement("return_msg")]
+        public string ReturnMsg { get; set; }
+
+        /// <summary>
+        /// 业务结果
+        /// </summary>
+        [XmlElement("result_code")]
+        public string ResultCode { get; set; }
+
+        /// <summary>
+        /// 错误代码
+        /// </summary>
+        [XmlElement("err_code")]
+        public string ErrCode { get; set; }
+
+        /// <summary>
+        /// 错误描述	
+        /// </summary>
+        [XmlElement("err_code_des")]
+        public string ErrCodeDes { get; set; }
+
+        /// <summary>
+        /// 商户号
+        /// </summary>
+        [XmlElement("mch_id")]
+        public string MchId { get; set; }
+
         /// <summary>
         /// 商户企业付款单号
         /// </summary>
@@ -32,7 +69,7 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Response
         /// 代付金额
         /// </summary>
         [XmlElement("amount")]
-        public string Amount { get; set; }
+        public int Amount { get; set; }
 
         /// <summary>
         /// 代付单状态

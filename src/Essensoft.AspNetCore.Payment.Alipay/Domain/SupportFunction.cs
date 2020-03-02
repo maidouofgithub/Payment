@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,25 +11,25 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 卡名称
         /// </summary>
-        [JsonProperty("card_name")]
+        [JsonPropertyName("card_name")]
         public string CardName { get; set; }
 
         /// <summary>
         /// 卡类型编码，为智能卡系统的内部编码规则
         /// </summary>
-        [JsonProperty("card_type")]
+        [JsonPropertyName("card_type")]
         public string CardType { get; set; }
 
         /// <summary>
         /// 功能，支持开卡(issue)，圈存(load)，充值转账(recharge)
         /// </summary>
-        [JsonProperty("function_type")]
+        [JsonPropertyName("function_type")]
         public List<string> FunctionType { get; set; }
 
         /// <summary>
         /// 智能卡的跳转地址
         /// </summary>
-        [JsonProperty("goto_url")]
+        [JsonPropertyName("goto_url")]
         public string GotoUrl { get; set; }
     }
 }

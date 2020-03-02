@@ -10,40 +10,19 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay
             : base(dictionary)
         { }
 
-        public void Add(string key, object value)
+        public void Add(string key, int value)
         {
-            string strValue;
+            Add(key, value.ToString());
+        }
 
-            if (value == null)
-            {
-                strValue = null;
-            }
-            else if (value is string)
-            {
-                strValue = (string)value;
-            }
-            else if (value is int?)
-            {
-                strValue = (value as int?).Value.ToString();
-            }
-            else if (value is long?)
-            {
-                strValue = (value as long?).Value.ToString();
-            }
-            else if (value is double?)
-            {
-                strValue = (value as double?).Value.ToString();
-            }
-            else if (value is bool?)
-            {
-                strValue = (value as bool?).Value.ToString().ToLower();
-            }
-            else
-            {
-                strValue = value.ToString();
-            }
+        public void Add(string key, uint value)
+        {
+            Add(key, value.ToString());
+        }
 
-            Add(key, strValue);
+        public void Add(string key, long value)
+        {
+            Add(key, value.ToString());
         }
 
         public new void Add(string key, string value)
@@ -61,7 +40,7 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay
 
         public string SetValue(string key, string value)
         {
-            return base[key] = value;
+            return this[key] = value;
         }
     }
 }

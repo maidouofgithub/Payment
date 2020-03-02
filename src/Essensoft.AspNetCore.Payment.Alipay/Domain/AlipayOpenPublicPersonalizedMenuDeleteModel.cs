@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 要删除的个性化菜单key
         /// </summary>
-        [JsonProperty("menu_key")]
+        [JsonPropertyName("menu_key")]
         public string MenuKey { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using Essensoft.AspNetCore.Payment.Alipay.Domain;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Response
@@ -11,13 +11,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Response
         /// <summary>
         /// 授信结果
         /// </summary>
-        [JsonProperty("credit_result")]
+        [JsonPropertyName("credit_result")]
         public CreditResult CreditResult { get; set; }
 
         /// <summary>
         /// 为了保持幂等性，返回唯一请求号
         /// </summary>
-        [JsonProperty("request_id")]
+        [JsonPropertyName("request_id")]
         public string RequestId { get; set; }
     }
 }

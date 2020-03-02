@@ -1,14 +1,10 @@
 ﻿using Essensoft.AspNetCore.Payment.Alipay;
-using Essensoft.AspNetCore.Payment.JdPay;
-using Essensoft.AspNetCore.Payment.QPay;
-using Essensoft.AspNetCore.Payment.UnionPay;
 using Essensoft.AspNetCore.Payment.WeChatPay;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
+using Microsoft.Extensions.Hosting;
 
 namespace WebApplicationSample
 {
@@ -24,90 +20,42 @@ namespace WebApplicationSample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-
-            // 参数配置 可参考以下两篇文章.
-
-            // ASP.NET Core Web 支付功能接入 微信-扫码支付篇
-            // http://www.cnblogs.com/essenroc/p/8630730.html
-            // ASP.NET Core Web 支付功能接入 支付宝-电脑网页支付篇
-            // https://www.cnblogs.com/essenroc/p/8627775.html
-
+            // 引入Payment 依赖注入
             services.AddAlipay();
-            services.AddJdPay();
-            services.AddQPay();
-            services.AddUnionPay();
             services.AddWeChatPay();
 
+            // 在 appsettings.json(开发环境：appsettings.Development.json) 中 配置选项
             services.Configure<AlipayOptions>(Configuration.GetSection("Alipay"));
-            services.Configure<JdPayOptions>(Configuration.GetSection("JdPay"));
-            services.Configure<QPayOptions>(Configuration.GetSection("QPay"));
-            services.Configure<UnionPayOptions>(Configuration.GetSection("UnionPay"));
             services.Configure<WeChatPayOptions>(Configuration.GetSection("WeChatPay"));
 
-            services.AddWebEncoders(opt =>
-            {
-                opt.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
-            });
-
-            // Json格式 配置参数. 具体参数见 AlipayOptions、JdPayOptions、QPayOptions、UnionPayOptions、WeChatPayOptions类
-            //{
-            //  "Alipay": {
-            //    "AppId": "xxx",
-            //    "RsaPublicKey": "xxx",
-            //    "RsaPrivateKey": "xxx",
-            //    "SignType" : "RSA2"
-            //  },
-            //  "JdPay": {
-            //    "Merchant": "xxx",
-            //    "RsaPublicKey": "xxx",
-            //    "RsaPrivateKey": "xxx",
-            //    "DesKey": "xxx"
-            //  },
-            //  "QPay": {
-            //    "MchId": "xxx",
-            //    "Key": "xxx",
-            //    "Certificate": "xxx",
-            //  },
-            //  "UnionPay": {
-            //    "MerId": "xxx",
-            //    "SignCert": "xxx",
-            //    "SignCertPassword": "xxx",
-            //    "EncryptCert": "xxx",
-            //    "MiddleCert": "xxx",
-            //    "RootCert": "xxx",
-            //    "SecureKey": "xxx",
-            //  },
-            //  "WeChatPay": {
-            //    "AppId": "xxx",
-            //    "MchId": "xxx",
-            //    "Key": "xxx",
-            //    "Certificate": "xxx",
-            //    "RsaPublicKey": "xxx",
-            //  }
-            //}
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
-
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

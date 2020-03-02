@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,13 +10,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 服务结束时间，格式为yyyy-MM-dd HH:mm（到分）
         /// </summary>
-        [JsonProperty("gmt_end")]
+        [JsonPropertyName("gmt_end")]
         public string GmtEnd { get; set; }
 
         /// <summary>
         /// 服务开始时间，格式为yyyy-MM-dd HH:mm（到分）
         /// </summary>
-        [JsonProperty("gmt_start")]
+        [JsonPropertyName("gmt_start")]
         public string GmtStart { get; set; }
     }
 }

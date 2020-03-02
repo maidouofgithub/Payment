@@ -1,9 +1,13 @@
+﻿using System.Collections.Generic;
 using Essensoft.AspNetCore.Payment.WeChatPay.Response;
-using System.Collections.Generic;
+using Essensoft.AspNetCore.Payment.WeChatPay.Utility;
 
 namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
 {
-    public class WeChatPayRefundRequest : IWeChatPayCertificateRequest<WeChatPayRefundResponse>
+    /// <summary>
+    /// 申请退款 (普通商户 / 服务商)
+    /// </summary>
+    public class WeChatPayRefundRequest : IWeChatPayCertRequest<WeChatPayRefundResponse>
     {
         /// <summary>
         /// 微信订单号
@@ -26,12 +30,12 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
         public int TotalFee { get; set; }
 
         /// <summary>
-        /// 退款金额
+        /// 申请退款金额
         /// </summary>
         public int RefundFee { get; set; }
 
         /// <summary>
-        /// 货币种类
+        /// 退款货币种类
         /// </summary>
         public string RefundFeeType { get; set; }
 
@@ -50,17 +54,7 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
         /// </summary>
         public string NotifyUrl { get; set; }
 
-        /// <summary>
-        /// 子商户公众账号ID
-        /// </summary>
-        public string SubAppId { get; set; }
-
-        /// <summary>
-        /// 子商户号
-        /// </summary>
-        public string SubMchId { get; set; }
-
-        #region IWeChatPayRequest Members
+        #region IWeChatPayCertificateRequest Members
 
         public string GetRequestUrl()
         {
@@ -69,22 +63,32 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
 
         public IDictionary<string, string> GetParameters()
         {
-            var parameters = new WeChatPayDictionary()
+            var parameters = new WeChatPayDictionary
             {
                 { "transaction_id", TransactionId },
                 { "out_trade_no", OutTradeNo },
                 { "out_refund_no", OutRefundNo },
-                { "total_fee", TotalFee.ToString() },
-                { "refund_fee", RefundFee.ToString() },
+                { "total_fee", TotalFee },
+                { "refund_fee", RefundFee },
                 { "refund_fee_type", RefundFeeType },
                 { "refund_desc", RefundDesc },
                 { "refund_account", RefundAccount },
-                { "notify_url", NotifyUrl },
-                { "sub_appid", SubAppId },
-                { "sub_mch_id", SubMchId },
+                { "notify_url", NotifyUrl }
             };
             return parameters;
         }
+
+        public void PrimaryHandler(WeChatPayOptions options, WeChatPaySignType signType, WeChatPayDictionary sortedTxtParams)
+        {
+            sortedTxtParams.Add(WeChatPayConsts.nonce_str, WeChatPayUtility.GenerateNonceStr());
+            sortedTxtParams.Add(WeChatPayConsts.appid, options.AppId);
+            sortedTxtParams.Add(WeChatPayConsts.sub_appid, options.SubAppId);
+            sortedTxtParams.Add(WeChatPayConsts.mch_id, options.MchId);
+            sortedTxtParams.Add(WeChatPayConsts.sub_mch_id, options.SubMchId);
+
+            sortedTxtParams.Add(WeChatPayConsts.sign, WeChatPaySignature.SignWithKey(sortedTxtParams, options.Key, signType));
+        }
+
         #endregion
     }
 }

@@ -1,18 +1,24 @@
-﻿namespace Essensoft.AspNetCore.Payment.WeChatPay
+﻿using System.Xml.Serialization;
+
+namespace Essensoft.AspNetCore.Payment.WeChatPay
 {
-    /// <summary>
-    /// 基础对象。
-    /// </summary>
     public abstract class WeChatPayObject
     {
         /// <summary>
-        /// 响应原始内容
+        /// 原始内容
         /// </summary>
-        public string Body { get; set; }
+        [XmlIgnore]
+        public string ResponseBody { get; set; }
 
         /// <summary>
-        /// 响应原始参数
+        /// 原始参数
         /// </summary>
-        public WeChatPayDictionary Parameters { get; private set; } = new WeChatPayDictionary();
+        [XmlIgnore]
+        public WeChatPayDictionary ResponseParameters { get; internal set; }
+
+        /// <summary>
+        /// 处理 _$n / _$n_$m
+        /// </summary>
+        internal virtual void Execute() { }
     }
 }

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using Essensoft.AspNetCore.Payment.Alipay.Domain;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Response
@@ -11,7 +11,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Response
         /// <summary>
         /// 冻结订单详情
         /// </summary>
-        [JsonProperty("micro_pay_order_detail")]
+        [JsonPropertyName("micro_pay_order_detail")]
         public MicroPayOrderDetail MicroPayOrderDetail { get; set; }
     }
 }

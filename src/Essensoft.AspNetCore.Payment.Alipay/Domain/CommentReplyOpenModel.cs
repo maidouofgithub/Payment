@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,19 +10,19 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 回复内容，最多500字，不区分中英文
         /// </summary>
-        [JsonProperty("content")]
+        [JsonPropertyName("content")]
         public string Content { get; set; }
 
         /// <summary>
         /// 发表回复的操作员id
         /// </summary>
-        [JsonProperty("operator_id")]
+        [JsonPropertyName("operator_id")]
         public string OperatorId { get; set; }
 
         /// <summary>
         /// 回复发表时间
         /// </summary>
-        [JsonProperty("reply_publish_time")]
+        [JsonPropertyName("reply_publish_time")]
         public string ReplyPublishTime { get; set; }
     }
 }

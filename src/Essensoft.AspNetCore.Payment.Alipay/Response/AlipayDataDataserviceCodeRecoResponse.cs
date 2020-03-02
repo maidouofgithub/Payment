@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using Essensoft.AspNetCore.Payment.Alipay.Domain;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Response
@@ -11,7 +11,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Response
         /// <summary>
         /// 识别结果
         /// </summary>
-        [JsonProperty("result")]
+        [JsonPropertyName("result")]
         public AlipayCodeRecoResult Result { get; set; }
     }
 }

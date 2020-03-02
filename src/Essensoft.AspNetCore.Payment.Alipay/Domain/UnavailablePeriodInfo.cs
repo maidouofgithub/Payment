@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,13 +10,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 商品不可用时段结束日期。格式为YYYY-MM-DD，如2017-05-03
         /// </summary>
-        [JsonProperty("end_day")]
+        [JsonPropertyName("end_day")]
         public string EndDay { get; set; }
 
         /// <summary>
         /// 商品不可用时段开始日期。格式为YYYY-MM-DD，如2017-05-01
         /// </summary>
-        [JsonProperty("start_day")]
+        [JsonPropertyName("start_day")]
         public string StartDay { get; set; }
     }
 }

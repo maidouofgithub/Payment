@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,13 +11,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// a d
         /// </summary>
-        [JsonProperty("add")]
+        [JsonPropertyName("add")]
         public List<string> Add { get; set; }
 
         /// <summary>
         /// zzz
         /// </summary>
-        [JsonProperty("xxxx")]
+        [JsonPropertyName("xxxx")]
         public XXXXsdasdasd Xxxx { get; set; }
     }
 }

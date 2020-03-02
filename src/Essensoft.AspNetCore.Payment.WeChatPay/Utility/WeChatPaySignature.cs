@@ -1,41 +1,45 @@
-﻿using Essensoft.AspNetCore.Security;
-using Org.BouncyCastle.Asn1;
-using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
+using Essensoft.AspNetCore.Payment.Security;
 
 namespace Essensoft.AspNetCore.Payment.WeChatPay.Utility
 {
-    public class WeChatPaySignature
+    public static class WeChatPaySignature
     {
-        public static string SignWithKey(SortedDictionary<string, string> parameters, string key, bool useMD5 = true, bool excludeSignType = true)
+        public static string SignWithKey(WeChatPayDictionary dictionary, string key, WeChatPaySignType signType)
         {
             var sb = new StringBuilder();
-            foreach (var iter in parameters)
+            foreach (var iter in dictionary)
             {
-                if (!string.IsNullOrEmpty(iter.Value) && iter.Key != "sign" && (excludeSignType ? iter.Key != "sign_type" : true))
+                if (!string.IsNullOrEmpty(iter.Value) && iter.Key != "sign")
+                {
                     sb.Append(iter.Key).Append('=').Append(iter.Value).Append("&");
+                }
             }
+
             var signContent = sb.Append("key=").Append(key).ToString();
-            return useMD5 ? MD5.Compute(signContent).ToUpper() : HMACSHA256.Compute(signContent, key).ToUpper();
+
+            return signType switch
+            {
+                WeChatPaySignType.MD5 => MD5.Compute(signContent).ToUpperInvariant(),
+                WeChatPaySignType.HMAC_SHA256 => HMACSHA256.Compute(signContent, key).ToUpperInvariant(),
+                _ => throw new WeChatPayException("Unknown sign type!"),
+            };
         }
 
-        public static string Encrypt(string data, ICipherParameters parameters)
+        public static string SignWithSecret(WeChatPayDictionary dictionary, string secret, List<string> include)
         {
-            var cipher = (BufferedAsymmetricBlockCipher)CipherUtilities.GetCipher("RSA/ECB/OAEPWITHSHA-1ANDMGF1PADDING");
-            cipher.Init(true, parameters as ICipherParameters);
-            var outBytes = cipher.DoFinal(Encoding.UTF8.GetBytes(data));
-            return Convert.ToBase64String(outBytes);
-        }
+            var sb = new StringBuilder();
+            foreach (var iter in dictionary)
+            {
+                if (!string.IsNullOrEmpty(iter.Value) && include.Contains(iter.Key))
+                {
+                    sb.Append(iter.Key).Append('=').Append(iter.Value).Append("&");
+                }
+            }
 
-        public static ICipherParameters GetPublicKeyParameters(string publicKey)
-        {
-            var rsaPubStructure = RsaPublicKeyStructure.GetInstance(Asn1Object.FromByteArray(Convert.FromBase64String(publicKey)));
-            return new RsaKeyParameters(false, rsaPubStructure.Modulus, rsaPubStructure.PublicExponent);
+            var signContent = sb.Append("secret=").Append(secret).ToString();
+            return MD5.Compute(signContent).ToUpperInvariant();
         }
     }
 }

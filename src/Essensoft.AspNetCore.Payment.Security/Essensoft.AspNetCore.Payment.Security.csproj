@@ -1,34 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Product>Payment</Product>
-    <Company>Essensoft</Company>
-    <Authors>Roc</Authors>
-    <Version>1.2.1</Version>
-    <Description>ASP.NET Core Payment for Security.</Description>
-    <AssemblyVersion>1.2.1.0</AssemblyVersion>
-    <FileVersion>1.2.1.0</FileVersion>
-    <Copyright>© Essensoft 2018</Copyright>
-    <PackageProjectUrl>https://github.com/Essensoft/Payment</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Essensoft/Payment</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>Essensoft.AspNetCore.Payment.Security</PackageId>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;LIB;NETSTANDARD2_0</DefineConstants>
-    <NoWarn>1701;1702;1705</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;LIB;RELEASE;NETSTANDARD2_0</DefineConstants>
-    <NoWarn>1591;618;672,168</NoWarn>
+    <PackageTags>Essensoft;Payment;Security</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.1.4" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
   </ItemGroup>
 
 </Project>

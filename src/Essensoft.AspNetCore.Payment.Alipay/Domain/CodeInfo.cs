@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,13 +10,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 跳转URL，扫码关注服务窗后会直接跳转到此URL
         /// </summary>
-        [JsonProperty("goto_url")]
+        [JsonPropertyName("goto_url")]
         public string GotoUrl { get; set; }
 
         /// <summary>
         /// 场景信息
         /// </summary>
-        [JsonProperty("scene")]
+        [JsonPropertyName("scene")]
         public Scene Scene { get; set; }
     }
 }

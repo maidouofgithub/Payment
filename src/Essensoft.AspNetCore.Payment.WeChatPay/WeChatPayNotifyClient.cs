@@ -1,76 +1,95 @@
-﻿using Essensoft.AspNetCore.Security;
+﻿#if NETCOREAPP3_1
+
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using Essensoft.AspNetCore.Payment.Security;
 using Essensoft.AspNetCore.Payment.WeChatPay.Notify;
 using Essensoft.AspNetCore.Payment.WeChatPay.Parser;
 using Essensoft.AspNetCore.Payment.WeChatPay.Utility;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+using MD5 = Essensoft.AspNetCore.Payment.Security.MD5;
 
 namespace Essensoft.AspNetCore.Payment.WeChatPay
 {
-    public class WeChatPayNotifyClient
+    public class WeChatPayNotifyClient : IWeChatPayNotifyClient
     {
-        public WeChatPayOptions Options { get; set; }
+        #region WeChatPayNotifyClient Constructors
 
-        public virtual ILogger<WeChatPayNotifyClient> Logger { get; set; }
-
-        public WeChatPayNotifyClient(
-            IOptions<WeChatPayOptions> optionsAccessor,
-            ILogger<WeChatPayNotifyClient> logger)
+        public WeChatPayNotifyClient()
         {
-            Options = optionsAccessor?.Value ?? new WeChatPayOptions();
-            Logger = logger;
-
-            if (string.IsNullOrEmpty(Options.Key))
-            {
-                throw new ArgumentNullException(nameof(Options.Key));
-            }
         }
 
-        public async Task<T> ExecuteAsync<T>(HttpRequest request) where T : WeChatPayNotifyResponse
-        {
-            var body = await new StreamReader(request.Body, Encoding.UTF8).ReadToEndAsync();
-            Logger.LogInformation(1, "Request Content:{body}", body);
+        #endregion
 
-            var parser = new WeChatPayXmlParser<T>();
-            var rsp = parser.Parse(body);
-            if (rsp is WeChatPayRefundNotifyResponse)
+        #region IWeChatPayNotifyClient Members
+
+        public async Task<T> ExecuteAsync<T>(HttpRequest request, WeChatPayOptions options) where T : WeChatPayNotify
+        {
+            if (request == null)
             {
-                var key = MD5.Compute(Options.Key).ToLower();
-                var data = AES.Decrypt(rsp.ReqInfo, key); // AES-256-ECB
-                rsp = parser.Parse(rsp, data);
-                rsp.Body = data;
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (string.IsNullOrEmpty(options.Key))
+            {
+                throw new ArgumentNullException(nameof(options.Key));
+            }
+
+            var body = await new StreamReader(request.Body, Encoding.UTF8).ReadToEndAsync();
+            var parser = new WeChatPayXmlParser<T>();
+            var notify = parser.Parse(body);
+            if (notify is WeChatPayRefundNotify)
+            {
+                var key = MD5.Compute(options.Key).ToLowerInvariant();
+                var data = AES.Decrypt((notify as WeChatPayRefundNotify).ReqInfo, key, CipherMode.ECB, PaddingMode.PKCS7);
+                notify = parser.Parse(body, data);
             }
             else
             {
-                CheckNotifySign(rsp);
-                rsp.Body = body;
+                CheckNotifySign(notify, options);
             }
-            return rsp;
+
+            return notify;
         }
 
-        private void CheckNotifySign(WeChatPayNotifyResponse response)
+        #endregion
+
+        #region Common Method
+
+        private void CheckNotifySign(WeChatPayNotify notify, WeChatPayOptions options)
         {
-            if (response?.Parameters?.Count == 0)
+            if (string.IsNullOrEmpty(notify.ResponseBody))
             {
-                throw new Exception("sign check fail: Body is Empty!");
+                throw new WeChatPayException("sign check fail: Body is Empty!");
             }
 
-            var sign = response?.Sign;
-            if (string.IsNullOrEmpty(sign))
+            if (notify.ResponseParameters.Count == 0)
             {
-                throw new Exception("sign check fail: sign is Empty!");
+                throw new WeChatPayException("sign check fail: Parameters is Empty!");
             }
 
-            var cal_sign = WeChatPaySignature.SignWithKey(response.Parameters, Options.Key);
+            if (!notify.ResponseParameters.TryGetValue("sign", out var sign))
+            {
+                throw new WeChatPayException("sign check fail: sign is Empty!");
+            }
+
+            var cal_sign = WeChatPaySignature.SignWithKey(notify.ResponseParameters, options.Key, WeChatPaySignType.MD5);
             if (cal_sign != sign)
             {
-                throw new Exception("sign check fail: check Sign and Data Fail!");
+                throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
             }
         }
+
+        #endregion
     }
 }
+
+#endif

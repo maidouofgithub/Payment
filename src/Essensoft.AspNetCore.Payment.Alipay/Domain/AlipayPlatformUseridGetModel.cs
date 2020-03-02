@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,7 +11,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// openId的列表
         /// </summary>
-        [JsonProperty("open_ids")]
+        [JsonPropertyName("open_ids")]
         public List<string> OpenIds { get; set; }
     }
 }

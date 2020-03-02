@@ -1,30 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon />
-    <Win32Resource />
-    <Company>Essensoft</Company>
-    <Authors>Roc</Authors>
-    <Product>Payment</Product>
-    <Version>1.2.1</Version>
-    <Description>ASP.NET Core Payment for WeChatPay.</Description>
-    <AssemblyVersion>1.2.1.0</AssemblyVersion>
-    <FileVersion>1.2.1.0</FileVersion>
-    <Copyright>© Essensoft 2018</Copyright>
-    <PackageProjectUrl>https://github.com/Essensoft/Payment</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Essensoft/Payment</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
     <PackageId>Essensoft.AspNetCore.Payment.WeChatPay</PackageId>
+    <PackageTags>Essensoft;Payment;WeChatPay;微信支付</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.1" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\Essensoft.AspNetCore.Payment.Security\Essensoft.AspNetCore.Payment.Security.csproj" />
   </ItemGroup>

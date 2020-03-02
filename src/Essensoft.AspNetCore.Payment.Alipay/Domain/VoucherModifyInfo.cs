@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,31 +11,31 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 追加的适用门店
         /// </summary>
-        [JsonProperty("suitable_shops")]
+        [JsonPropertyName("suitable_shops")]
         public List<string> SuitableShops { get; set; }
 
         /// <summary>
         /// 描述信息
         /// </summary>
-        [JsonProperty("voucher_desc")]
+        [JsonPropertyName("voucher_desc")]
         public string VoucherDesc { get; set; }
 
         /// <summary>
         /// 券id
         /// </summary>
-        [JsonProperty("voucher_id")]
+        [JsonPropertyName("voucher_id")]
         public string VoucherId { get; set; }
 
         /// <summary>
         /// 券名称
         /// </summary>
-        [JsonProperty("voucher_name")]
+        [JsonPropertyName("voucher_name")]
         public string VoucherName { get; set; }
 
         /// <summary>
         /// 使用须知
         /// </summary>
-        [JsonProperty("voucher_terms")]
+        [JsonPropertyName("voucher_terms")]
         public List<VoucherTermInfo> VoucherTerms { get; set; }
     }
 }

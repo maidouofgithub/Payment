@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 支付宝社区小区统一编号，必须在物业账号名下存在。
         /// </summary>
-        [JsonProperty("community_id")]
+        [JsonPropertyName("community_id")]
         public string CommunityId { get; set; }
     }
 }

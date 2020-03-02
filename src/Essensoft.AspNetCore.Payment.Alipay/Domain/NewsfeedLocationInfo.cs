@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,19 +10,19 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 地理信息
         /// </summary>
-        [JsonProperty("ad_code")]
+        [JsonPropertyName("ad_code")]
         public string AdCode { get; set; }
 
         /// <summary>
         /// 纬度 latitude（填写非0非1）
         /// </summary>
-        [JsonProperty("lat")]
+        [JsonPropertyName("lat")]
         public string Lat { get; set; }
 
         /// <summary>
         /// 经度 longitude（填写非0非1）
         /// </summary>
-        [JsonProperty("lon")]
+        [JsonPropertyName("lon")]
         public string Lon { get; set; }
     }
 }

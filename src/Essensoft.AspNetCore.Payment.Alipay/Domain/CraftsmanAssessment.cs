@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,19 +11,19 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 子评分项
         /// </summary>
-        [JsonProperty("sub_assessments")]
+        [JsonPropertyName("sub_assessments")]
         public List<CraftsmanSubAssessment> SubAssessments { get; set; }
 
         /// <summary>
         /// 单个手艺人的评价总条数。
         /// </summary>
-        [JsonProperty("total_no")]
+        [JsonPropertyName("total_no")]
         public long TotalNo { get; set; }
 
         /// <summary>
         /// 单个手艺人的总评分的均分
         /// </summary>
-        [JsonProperty("total_score")]
+        [JsonPropertyName("total_score")]
         public long TotalScore { get; set; }
     }
 }

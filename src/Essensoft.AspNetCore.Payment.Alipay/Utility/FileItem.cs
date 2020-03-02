@@ -12,10 +12,10 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Utility
     /// </summary>
     public class FileItem
     {
+        private byte[] content;
+        private readonly FileInfo fileInfo;
         private string fileName;
         private string mimeType;
-        private byte[] content;
-        private FileInfo fileInfo;
 
         /// <summary>
         /// 基于本地文件的构造器。
@@ -27,6 +27,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Utility
             {
                 throw new ArgumentException("fileInfo is null or not exists!");
             }
+
             this.fileInfo = fileInfo;
         }
 
@@ -45,8 +46,15 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Utility
         /// <param name="content">文件字节流</param>
         public FileItem(string fileName, byte[] content)
         {
-            if (string.IsNullOrEmpty(fileName)) throw new ArgumentNullException("fileName");
-            if (content == null || content.Length == 0) throw new ArgumentNullException("content");
+            if (string.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentNullException(nameof(fileName));
+            }
+
+            if (content == null || content.Length == 0)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
 
             this.fileName = fileName;
             this.content = content;
@@ -61,7 +69,11 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Utility
         public FileItem(string fileName, byte[] content, string mimeType)
             : this(fileName, content)
         {
-            if (string.IsNullOrEmpty(mimeType)) throw new ArgumentNullException("mimeType");
+            if (string.IsNullOrEmpty(mimeType))
+            {
+                throw new ArgumentNullException(nameof(mimeType));
+            }
+
             this.mimeType = mimeType;
         }
 
@@ -71,6 +83,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Utility
             {
                 fileName = fileInfo.FullName;
             }
+
             return fileName;
         }
 
@@ -80,6 +93,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Utility
             {
                 mimeType = AlipayUtility.GetMimeType(GetContent());
             }
+
             return mimeType;
         }
 

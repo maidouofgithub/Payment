@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,25 +10,25 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 用户变更手机号，替换旧的手机号
         /// </summary>
-        [JsonProperty("user_change_mobile")]
+        [JsonPropertyName("user_change_mobile")]
         public string UserChangeMobile { get; set; }
 
         /// <summary>
         /// 孩子家长的手机号
         /// </summary>
-        [JsonProperty("user_mobile")]
+        [JsonPropertyName("user_mobile")]
         public string UserMobile { get; set; }
 
         /// <summary>
         /// 张三
         /// </summary>
-        [JsonProperty("user_name")]
+        [JsonPropertyName("user_name")]
         public string UserName { get; set; }
 
         /// <summary>
         /// 孩子与家长的关系： 1、爸爸  2、妈妈  3、爷爷  4、奶奶  5、外公  6、外婆  7、家长
         /// </summary>
-        [JsonProperty("user_relation")]
+        [JsonPropertyName("user_relation")]
         public string UserRelation { get; set; }
     }
 }

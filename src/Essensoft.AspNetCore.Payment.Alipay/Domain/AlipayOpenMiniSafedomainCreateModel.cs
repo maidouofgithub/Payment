@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// httpRequest域白名单
         /// </summary>
-        [JsonProperty("safe_domain")]
+        [JsonPropertyName("safe_domain")]
         public string SafeDomain { get; set; }
     }
 }

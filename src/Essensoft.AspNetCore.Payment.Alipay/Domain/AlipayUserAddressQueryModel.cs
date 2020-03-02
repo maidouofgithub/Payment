@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 用户地址唯一ID。通过调用小程序开放api(my.chooseAddress)获取。
         /// </summary>
-        [JsonProperty("address_id")]
+        [JsonPropertyName("address_id")]
         public string AddressId { get; set; }
     }
 }

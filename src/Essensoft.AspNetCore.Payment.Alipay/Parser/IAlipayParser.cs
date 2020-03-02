@@ -1,6 +1,4 @@
-﻿using Essensoft.AspNetCore.Payment.Alipay.Request;
-
-namespace Essensoft.AspNetCore.Payment.Alipay.Parser
+﻿namespace Essensoft.AspNetCore.Payment.Alipay.Parser
 {
     /// <summary>
     /// Alipay API响应解释器接口。响应格式可以是XML, JSON等等。
@@ -20,8 +18,14 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Parser
         /// </summary>
         /// <param name="request"></param>
         /// <param name="responseBody"></param>
-        /// <returns></returns>
         SignItem GetSignItem(IAlipayRequest<T> request, string responseBody);
+
+        /// <summary>
+        /// 解析证书以及签名内容
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="responseBody"></param>
+        CertItem GetCertItem(IAlipayRequest<T> request, string responseBody);
 
         /// <summary>
         /// 将响应串解密
@@ -30,8 +34,6 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Parser
         /// <param name="body"></param>
         /// <param name="encryptType"></param>
         /// <param name="encryptKey"></param>
-        /// <param name="charset"></param>
-        /// <returns></returns>
         string EncryptSourceData(IAlipayRequest<T> request, string body, string encryptType, string encryptKey);
     }
 }

@@ -2,13 +2,56 @@
 
 namespace Essensoft.AspNetCore.Payment.WeChatPay.Response
 {
+    [XmlRoot("xml")]
     public class WeChatPayGetTransferInfoResponse : WeChatPayResponse
     {
         /// <summary>
-        /// 商户订单号
+        /// 返回状态码
+        /// </summary>
+        [XmlElement("return_code")]
+        public string ReturnCode { get; set; }
+
+        /// <summary>
+        /// 返回信息
+        /// </summary>
+        [XmlElement("return_msg")]
+        public string ReturnMsg { get; set; }
+
+        /// <summary>
+        /// 业务结果
+        /// </summary>
+        [XmlElement("result_code")]
+        public string ResultCode { get; set; }
+
+        /// <summary>
+        /// 错误代码
+        /// </summary>
+        [XmlElement("err_code")]
+        public string ErrCode { get; set; }
+
+        /// <summary>
+        /// 错误描述	
+        /// </summary>
+        [XmlElement("err_code_des")]
+        public string ErrCodeDes { get; set; }
+
+        /// <summary>
+        /// 商户单号
         /// </summary>
         [XmlElement("partner_trade_no")]
         public string PartnerTradeNo { get; set; }
+
+        /// <summary>
+        /// 应用号
+        /// </summary>
+        [XmlElement("appid")]
+        public string AppId { get; set; }
+
+        /// <summary>
+        /// 商户号
+        /// </summary>
+        [XmlElement("mch_id")]
+        public string MchId { get; set; }
 
         /// <summary>
         /// 付款单号
@@ -53,7 +96,13 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Response
         public string TransferTime { get; set; }
 
         /// <summary>
-        /// 付款描述
+        /// 付款成功时间
+        /// </summary>
+        [XmlElement("payment_time")]
+        public string PaymentTime { get; set; }
+
+        /// <summary>
+        /// 企业付款备注
         /// </summary>
         [XmlElement("desc")]
         public string Desc { get; set; }

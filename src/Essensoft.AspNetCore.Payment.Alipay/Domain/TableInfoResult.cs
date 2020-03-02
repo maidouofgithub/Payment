@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,7 +11,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 返回TableListResult集合
         /// </summary>
-        [JsonProperty("table_info_list")]
+        [JsonPropertyName("table_info_list")]
         public List<TableListResult> TableInfoList { get; set; }
     }
 }

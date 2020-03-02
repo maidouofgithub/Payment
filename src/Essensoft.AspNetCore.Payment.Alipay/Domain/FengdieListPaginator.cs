@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,25 +10,25 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 总页数
         /// </summary>
-        [JsonProperty("page_count")]
+        [JsonPropertyName("page_count")]
         public long PageCount { get; set; }
 
         /// <summary>
         /// 当前页码
         /// </summary>
-        [JsonProperty("page_number")]
+        [JsonPropertyName("page_number")]
         public long PageNumber { get; set; }
 
         /// <summary>
         /// 每页显示记录数
         /// </summary>
-        [JsonProperty("page_size")]
+        [JsonPropertyName("page_size")]
         public long PageSize { get; set; }
 
         /// <summary>
         /// 符合条件的记录总数
         /// </summary>
-        [JsonProperty("total")]
+        [JsonPropertyName("total")]
         public long Total { get; set; }
     }
 }

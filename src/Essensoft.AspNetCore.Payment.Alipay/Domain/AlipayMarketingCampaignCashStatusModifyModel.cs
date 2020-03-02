@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,13 +10,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 修改后的活动状态, PAUSE或者READY或者CLOSED
         /// </summary>
-        [JsonProperty("camp_status")]
+        [JsonPropertyName("camp_status")]
         public string CampStatus { get; set; }
 
         /// <summary>
         /// 要修改的现金红包活动号
         /// </summary>
-        [JsonProperty("crowd_no")]
+        [JsonPropertyName("crowd_no")]
         public string CrowdNo { get; set; }
     }
 }

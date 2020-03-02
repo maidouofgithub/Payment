@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,13 +11,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// user_id：支付宝账户ID(2088开头)  logon_id：登陆账号
         /// </summary>
-        [JsonProperty("claimer_id_type")]
+        [JsonPropertyName("claimer_id_type")]
         public string ClaimerIdType { get; set; }
 
         /// <summary>
         /// 认领人
         /// </summary>
-        [JsonProperty("claimers")]
+        [JsonPropertyName("claimers")]
         public List<string> Claimers { get; set; }
     }
 }

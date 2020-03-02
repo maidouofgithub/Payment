@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 应用授权令牌
         /// </summary>
-        [JsonProperty("app_auth_token")]
+        [JsonPropertyName("app_auth_token")]
         public string AppAuthToken { get; set; }
     }
 }

@@ -1,103 +1,111 @@
-﻿using Essensoft.AspNetCore.Payment.Alipay.Parser;
-using Essensoft.AspNetCore.Payment.Alipay.Utility;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿#if NETCOREAPP3_1
+
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Essensoft.AspNetCore.Payment.Alipay.Parser;
+using Essensoft.AspNetCore.Payment.Alipay.Utility;
+using Microsoft.AspNetCore.Http;
 
 namespace Essensoft.AspNetCore.Payment.Alipay
 {
-    public class AlipayNotifyClient
+    public class AlipayNotifyClient : IAlipayNotifyClient
     {
-        private RSAParameters RSAPublicParameters;
+        #region AlipayNotifyClient Constructors
 
-        public AlipayOptions Options { get; set; }
-
-        public virtual ILogger<AlipayNotifyClient> Logger { get; set; }
-
-        public AlipayNotifyClient(
-            IOptions<AlipayOptions> optionsAccessor,
-            ILogger<AlipayNotifyClient> logger)
+        public AlipayNotifyClient()
         {
-            Options = optionsAccessor?.Value ?? new AlipayOptions();
-            Logger = logger;
 
-            if (string.IsNullOrEmpty(Options.RsaPublicKey))
-            {
-                throw new ArgumentNullException(nameof(Options.RsaPublicKey));
-            }
-
-            RSAPublicParameters = AlipaySignature.GetPublicParameters(Options.RsaPublicKey);
         }
 
-        public Task<T> ExecuteAsync<T>(HttpRequest request) where T : AlipayNotifyResponse
+        #endregion
+
+        #region IAlipayNotifyClient Members
+
+        public Task<T> ExecuteAsync<T>(HttpRequest request, AlipayOptions options) where T : AlipayNotify
         {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (string.IsNullOrEmpty(options.SignType))
+            {
+                throw new ArgumentNullException(nameof(options.SignType));
+            }
+
+            if (string.IsNullOrEmpty(options.AlipayPublicKey))
+            {
+                throw new ArgumentNullException(nameof(options.AlipayPublicKey));
+            }
+
             var parameters = GetParameters(request);
-            var parser = new AlipayDictionaryParser<T>();
-            var rsp = parser.Parse(parameters);
-
-            var query = HttpClientEx.BuildQuery(parameters);
-            Logger.LogInformation(0, "Request Content:{query}", query);
-
-            CheckNotifySign(parameters, RSAPublicParameters, Options.SignType);
+            var rsp = AlipayDictionaryParser.Parse<T>(parameters);
+            CheckNotifySign(parameters, options);
             return Task.FromResult(rsp);
         }
 
-        private SortedDictionary<string, string> GetParameters(HttpRequest request)
+        #endregion
+
+        #region IAlipayNotifyClient Members
+
+        public Task<T> CertificateExecuteAsync<T>(HttpRequest request, AlipayOptions options) where T : AlipayNotify
         {
-            var parameters = new SortedDictionary<string, string>();
+            return ExecuteAsync<T>(request, options);
+        }
+
+        #endregion
+
+        #region IAlipayNotifyClient Members
+
+        public IDictionary<string, string> GetParameters(HttpRequest request)
+        {
+            var parameters = new Dictionary<string, string>();
             if (request.Method == "POST")
             {
-                foreach (var item in request.Form)
+                foreach (var iter in request.Form)
                 {
-                    parameters.Add(item.Key, item.Value);
+                    parameters.Add(iter.Key, iter.Value);
                 }
             }
             else
             {
-                foreach (var item in request.Query)
+                foreach (var iter in request.Query)
                 {
-                    parameters.Add(item.Key, item.Value);
+                    parameters.Add(iter.Key, iter.Value);
                 }
             }
             return parameters;
         }
 
-        private void CheckNotifySign(IDictionary<string, string> content, RSAParameters parameters, string signType)
+        #endregion
+
+        #region Common Method
+
+        private void CheckNotifySign(IDictionary<string, string> dictionary, AlipayOptions options)
         {
-            if (content.Count == 0)
+            if (dictionary == null || dictionary.Count == 0)
             {
-                throw new AlipayException("sign check fail: content is Empty!");
+                throw new AlipayException("sign check fail: dictionary is Empty!");
             }
 
-            var sign = content["sign"];
-            if (string.IsNullOrEmpty(sign))
+            if (!dictionary.TryGetValue(AlipayConstants.SIGN, out var sign))
             {
                 throw new AlipayException("sign check fail: sign is Empty!");
             }
 
-            var prestr = GetSignContent(content);
-            if (!AlipaySignature.RSACheckContent(prestr, sign, parameters, signType))
+            dictionary.Remove(AlipayConstants.SIGN);
+            dictionary.Remove(AlipayConstants.SIGN_TYPE);
+            var prestr = AlipaySignature.GetSignContent(dictionary);
+            if (!AlipaySignature.RSACheckContent(prestr, sign, options.AlipayPublicKey, options.Charset, options.SignType))
             {
-                throw new AlipayException("sign check fail: check Sign and Data Fail JSON also");
+                throw new AlipayException("sign check fail: check Sign Data Fail!");
             }
         }
 
-        private string GetSignContent(IDictionary<string, string> parameters)
-        {
-            var content = new StringBuilder();
-            foreach (var iter in parameters)
-            {
-                if (iter.Key.ToLower() != "sign" && iter.Key.ToLower() != "sign_type" && !string.IsNullOrEmpty(iter.Value))
-                {
-                    content.Append(iter.Key + "=" + iter.Value + "&");
-                }
-            }
-            return content.ToString().Substring(0, content.Length - 1);
-        }
+        #endregion
     }
 }
+
+#endif

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 抬头动态码
         /// </summary>
-        [JsonProperty("bar_code")]
+        [JsonPropertyName("bar_code")]
         public string BarCode { get; set; }
     }
 }

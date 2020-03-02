@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,13 +10,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 支付宝app_id
         /// </summary>
-        [JsonProperty("app_id")]
+        [JsonPropertyName("app_id")]
         public string AppId { get; set; }
 
         /// <summary>
         /// 车辆id
         /// </summary>
-        [JsonProperty("vehicle_id")]
+        [JsonPropertyName("vehicle_id")]
         public string VehicleId { get; set; }
     }
 }

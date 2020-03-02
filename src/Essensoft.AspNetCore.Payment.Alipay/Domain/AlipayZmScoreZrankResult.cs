@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 芝麻分分段 Z0-Z7
         /// </summary>
-        [JsonProperty("zrank")]
+        [JsonPropertyName("zrank")]
         public string Zrank { get; set; }
     }
 }

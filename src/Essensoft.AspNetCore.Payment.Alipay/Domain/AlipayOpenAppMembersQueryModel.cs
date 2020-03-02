@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 成员的角色类型，DEVELOPER-开发者，EXPERIENCER-体验者
         /// </summary>
-        [JsonProperty("role")]
+        [JsonPropertyName("role")]
         public string Role { get; set; }
     }
 }

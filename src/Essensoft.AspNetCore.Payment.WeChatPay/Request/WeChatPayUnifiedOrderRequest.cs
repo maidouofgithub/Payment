@@ -1,8 +1,12 @@
+﻿using System.Collections.Generic;
 using Essensoft.AspNetCore.Payment.WeChatPay.Response;
-using System.Collections.Generic;
+using Essensoft.AspNetCore.Payment.WeChatPay.Utility;
 
 namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
 {
+    /// <summary>
+    /// 统一下单 (普通商户 / 服务商)
+    /// </summary>
     public class WeChatPayUnifiedOrderRequest : IWeChatPayRequest<WeChatPayUnifiedOrderResponse>
     {
         /// <summary>
@@ -43,7 +47,7 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
         /// <summary>
         /// 终端IP
         /// </summary>
-        public string SpbillCreateIp { get; set; }
+        public string SpBillCreateIp { get; set; }
 
         /// <summary>
         /// 交易起始时间
@@ -87,14 +91,19 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
         public string OpenId { get; set; }
 
         /// <summary>
-        /// 子商户公众账号ID
+        /// 子用户标识
         /// </summary>
-        public string SubAppId { get; set; }
+        public string SubOpenId { get; set; }
 
         /// <summary>
-        /// 子商户号
+        /// 场景信息
         /// </summary>
-        public string SubMchId { get; set; }
+        public string SceneInfo { get; set; }
+
+        /// <summary>
+        /// 是否指定服务商分账
+        /// </summary>
+        public string ProfitSharing { get; set; }
 
         #region IWeChatPayRequest Members
 
@@ -105,7 +114,7 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
 
         public IDictionary<string, string> GetParameters()
         {
-            var parameters = new WeChatPayDictionary()
+            var parameters = new WeChatPayDictionary
             {
                 { "device_info", DeviceInfo },
                 { "body", Body },
@@ -114,7 +123,7 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
                 { "out_trade_no", OutTradeNo },
                 { "fee_type", FeeType },
                 { "total_fee", TotalFee },
-                { "spbill_create_ip", SpbillCreateIp },
+                { "spbill_create_ip", SpBillCreateIp },
                 { "time_start", TimeStart },
                 { "time_expire", TimeExpire },
                 { "goods_tag", GoodsTag },
@@ -123,10 +132,22 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
                 { "product_id", ProductId },
                 { "limit_pay", LimitPay },
                 { "openid", OpenId },
-                { "sub_appid", SubAppId },
-                { "sub_mch_id", SubMchId },
+                { "sub_openid", SubOpenId },
+                { "scene_info", SceneInfo },
+                { "profit_sharing", ProfitSharing }
             };
             return parameters;
+        }
+
+        public void PrimaryHandler(WeChatPayOptions options, WeChatPaySignType signType, WeChatPayDictionary sortedTxtParams)
+        {
+            sortedTxtParams.Add(WeChatPayConsts.nonce_str, WeChatPayUtility.GenerateNonceStr());
+            sortedTxtParams.Add(WeChatPayConsts.appid, options.AppId);
+            sortedTxtParams.Add(WeChatPayConsts.sub_appid, options.SubAppId);
+            sortedTxtParams.Add(WeChatPayConsts.mch_id, options.MchId);
+            sortedTxtParams.Add(WeChatPayConsts.sub_mch_id, options.SubMchId);
+
+            sortedTxtParams.Add(WeChatPayConsts.sign, WeChatPaySignature.SignWithKey(sortedTxtParams, options.Key, signType));
         }
 
         #endregion

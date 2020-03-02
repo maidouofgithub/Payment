@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -11,7 +11,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 上传的商品集合
         /// </summary>
-        [JsonProperty("shop_items")]
+        [JsonPropertyName("shop_items")]
         public List<RequestExtShopItem> ShopItems { get; set; }
     }
 }

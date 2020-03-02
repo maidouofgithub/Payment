@@ -1,12 +1,13 @@
-﻿using Essensoft.AspNetCore.Payment.WeChatPay.Response;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Essensoft.AspNetCore.Payment.WeChatPay.Response;
+using Essensoft.AspNetCore.Payment.WeChatPay.Utility;
 
 namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
 {
     /// <summary>
-    /// 资金账单下载
+    /// 下载资金账单 (普通商户)
     /// </summary>
-    public class WeChatPayDownloadFundFlowRequest : IWeChatPayCertificateRequest<WeChatPayDownloadFundFlowResponse>
+    public class WeChatPayDownloadFundFlowRequest : IWeChatPayCertRequest<WeChatPayDownloadFundFlowResponse>
     {
         /// <summary>
         /// 资金账单日期
@@ -29,7 +30,7 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
         /// </summary>
         public string TarType { get; set; }
 
-        #region IWeChatPayRequest Members
+        #region IWeChatPayCertificateRequest Members
 
         public string GetRequestUrl()
         {
@@ -38,13 +39,37 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Request
 
         public IDictionary<string, string> GetParameters()
         {
-            var parameters = new WeChatPayDictionary()
+            var parameters = new WeChatPayDictionary
             {
                 { "bill_date", BillDate },
                 { "account_type", AccountType },
                 { "tar_type", TarType }
             };
             return parameters;
+        }
+
+        public WeChatPaySignType GetSignType()
+        {
+            return WeChatPaySignType.HMAC_SHA256;
+        }
+
+        public void PrimaryHandler(WeChatPayOptions options, WeChatPaySignType signType, WeChatPayDictionary sortedTxtParams)
+        {
+            sortedTxtParams.Add(WeChatPayConsts.nonce_str, WeChatPayUtility.GenerateNonceStr());
+            sortedTxtParams.Add(WeChatPayConsts.appid, options.AppId);
+            sortedTxtParams.Add(WeChatPayConsts.mch_id, options.MchId);
+
+            if (signType == WeChatPaySignType.HMAC_SHA256)
+            {
+                sortedTxtParams.Add(WeChatPayConsts.sign_type, WeChatPayConsts.HMAC_SHA256);
+            }
+
+            sortedTxtParams.Add(WeChatPayConsts.sign, WeChatPaySignature.SignWithKey(sortedTxtParams, options.Key, signType));
+        }
+
+        public bool GetNeedCheckSign()
+        {
+            return false;
         }
 
         #endregion

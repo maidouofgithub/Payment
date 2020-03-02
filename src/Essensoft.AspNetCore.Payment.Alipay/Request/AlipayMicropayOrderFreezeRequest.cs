@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Essensoft.AspNetCore.Payment.Alipay.Response;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Request
 {
     /// <summary>
-    /// AOP API: alipay.micropay.order.freeze
+    /// alipay.micropay.order.freeze
     /// </summary>
     public class AlipayMicropayOrderFreezeRequest : IAlipayRequest<AlipayMicropayOrderFreezeResponse>
     {
@@ -35,61 +35,73 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Request
         public string PayConfirm { get; set; }
 
         #region IAlipayRequest Members
-		private bool  needEncrypt=false;
+        private bool needEncrypt = false;
         private string apiVersion = "1.0";
-		private string terminalType;
-		private string terminalInfo;
+        private string terminalType;
+        private string terminalInfo;
         private string prodCode;
-		private string notifyUrl;
+        private string notifyUrl;
         private string returnUrl;
-		private AlipayObject bizModel;
+        private AlipayObject bizModel;
 
-		public void SetNeedEncrypt(bool needEncrypt){
-             this.needEncrypt=needEncrypt;
+        public void SetNeedEncrypt(bool needEncrypt)
+        {
+            this.needEncrypt = needEncrypt;
         }
 
-        public bool GetNeedEncrypt(){
+        public bool GetNeedEncrypt()
+        {
 
             return needEncrypt;
         }
 
-		public void SetNotifyUrl(string notifyUrl){
+        public void SetNotifyUrl(string notifyUrl)
+        {
             this.notifyUrl = notifyUrl;
         }
 
-        public string GetNotifyUrl(){
+        public string GetNotifyUrl()
+        {
             return notifyUrl;
         }
 
-        public void SetReturnUrl(string returnUrl){
+        public void SetReturnUrl(string returnUrl)
+        {
             this.returnUrl = returnUrl;
         }
 
-        public string GetReturnUrl(){
+        public string GetReturnUrl()
+        {
             return returnUrl;
         }
 
-        public void SetTerminalType(string terminalType){
-			this.terminalType=terminalType;
-		}
-
-    	public string GetTerminalType(){
-    		return terminalType;
-    	}
-
-    	public void SetTerminalInfo(string terminalInfo){
-    		this.terminalInfo=terminalInfo;
-    	}
-
-    	public string GetTerminalInfo(){
-    		return terminalInfo;
-    	}
-
-        public void SetProdCode(string prodCode){
-            this.prodCode=prodCode;
+        public void SetTerminalType(string terminalType)
+        {
+            this.terminalType = terminalType;
         }
 
-        public string GetProdCode(){
+        public string GetTerminalType()
+        {
+            return terminalType;
+        }
+
+        public void SetTerminalInfo(string terminalInfo)
+        {
+            this.terminalInfo = terminalInfo;
+        }
+
+        public string GetTerminalInfo()
+        {
+            return terminalInfo;
+        }
+
+        public void SetProdCode(string prodCode)
+        {
+            this.prodCode = prodCode;
+        }
+
+        public string GetProdCode()
+        {
             return prodCode;
         }
 
@@ -98,11 +110,13 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Request
             return "alipay.micropay.order.freeze";
         }
 
-        public void SetApiVersion(string apiVersion){
-            this.apiVersion=apiVersion;
+        public void SetApiVersion(string apiVersion)
+        {
+            this.apiVersion = apiVersion;
         }
 
-        public string GetApiVersion(){
+        public string GetApiVersion()
+        {
             return apiVersion;
         }
 
@@ -119,7 +133,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Request
             return parameters;
         }
 
-		public AlipayObject GetBizModel()
+        public AlipayObject GetBizModel()
         {
             return bizModel;
         }

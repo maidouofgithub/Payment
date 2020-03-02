@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Essensoft.AspNetCore.Payment.Alipay.Domain;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Response
@@ -12,7 +12,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Response
         /// <summary>
         /// 单篇文章分析数据列表
         /// </summary>
-        [JsonProperty("data_list")]
+        [JsonPropertyName("data_list")]
         public List<SingleArticleAnalysisData> DataList { get; set; }
     }
 }

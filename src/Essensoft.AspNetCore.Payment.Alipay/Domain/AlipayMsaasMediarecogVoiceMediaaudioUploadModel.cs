@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,49 +10,49 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// base64编码的声音数据
         /// </summary>
-        [JsonProperty("data")]
+        [JsonPropertyName("data")]
         public string Data { get; set; }
 
         /// <summary>
         /// 扩展字段
         /// </summary>
-        [JsonProperty("extinfo_a")]
+        [JsonPropertyName("extinfo_a")]
         public string ExtinfoA { get; set; }
 
         /// <summary>
         /// 扩展字段
         /// </summary>
-        [JsonProperty("extinfo_b")]
+        [JsonPropertyName("extinfo_b")]
         public string ExtinfoB { get; set; }
 
         /// <summary>
         /// 扩展字段
         /// </summary>
-        [JsonProperty("extinfo_c")]
+        [JsonPropertyName("extinfo_c")]
         public string ExtinfoC { get; set; }
 
         /// <summary>
         /// 扩展字段
         /// </summary>
-        [JsonProperty("extinfo_d")]
+        [JsonPropertyName("extinfo_d")]
         public string ExtinfoD { get; set; }
 
         /// <summary>
         /// 时间戳
         /// </summary>
-        [JsonProperty("labeltime")]
+        [JsonPropertyName("labeltime")]
         public string Labeltime { get; set; }
 
         /// <summary>
         /// 媒体名称
         /// </summary>
-        [JsonProperty("vname")]
+        [JsonPropertyName("vname")]
         public string Vname { get; set; }
 
         /// <summary>
         /// 媒体类型
         /// </summary>
-        [JsonProperty("vtype")]
+        [JsonPropertyName("vtype")]
         public string Vtype { get; set; }
     }
 }

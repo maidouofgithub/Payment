@@ -2,51 +2,124 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Essensoft.AspNetCore.Security
+namespace Essensoft.AspNetCore.Payment.Security
 {
-    /// <summary>
-    /// AES加密解密
-    /// </summary>
-    public class AES
+    public static class AES
     {
-        /// <summary>
-        ///  AES 加密
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static string Encrypt(string data, string key)
+        public static string Encrypt(string data, string key, byte[] iv, CipherMode cipherMode, PaddingMode paddingMode)
         {
-            var rm = new RijndaelManaged
+            if (string.IsNullOrEmpty(data))
             {
-                Key = Encoding.UTF8.GetBytes(key),
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
+                throw new ArgumentNullException(nameof(data));
+            }
 
-            var content = Encoding.UTF8.GetBytes(data);
-            var cTransform = rm.CreateEncryptor();
-            return Convert.ToBase64String(cTransform.TransformFinalBlock(content, 0, content.Length));
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (iv == null)
+            {
+                throw new ArgumentNullException(nameof(iv));
+            }
+
+            using (var aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                aes.Mode = cipherMode;
+                aes.Padding = paddingMode;
+
+                using (var ctf = aes.CreateEncryptor())
+                {
+                    var content = Encoding.UTF8.GetBytes(data);
+                    return Convert.ToBase64String(ctf.TransformFinalBlock(content, 0, content.Length));
+                }
+            }
         }
 
-        /// <summary>
-        ///  AES 解密
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public static string Decrypt(string data, string key)
+        public static string Decrypt(string data, string key, byte[] iv, CipherMode cipherMode, PaddingMode paddingMode)
         {
-            var rm = new RijndaelManaged
+            if (string.IsNullOrEmpty(data))
             {
-                Key = Encoding.UTF8.GetBytes(key),
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
+                throw new ArgumentNullException(nameof(data));
+            }
 
-            var content = Convert.FromBase64String(data);
-            var cTransform = rm.CreateDecryptor();
-            return Encoding.UTF8.GetString(cTransform.TransformFinalBlock(content, 0, content.Length));
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (iv == null)
+            {
+                throw new ArgumentNullException(nameof(iv));
+            }
+
+            using (var aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                aes.Mode = cipherMode;
+                aes.Padding = paddingMode;
+
+                using (var ctf = aes.CreateDecryptor())
+                {
+                    var content = Convert.FromBase64String(data);
+                    return Encoding.UTF8.GetString(ctf.TransformFinalBlock(content, 0, content.Length));
+                }
+            }
+        }
+
+        public static string Encrypt(string data, string key, CipherMode cipherMode, PaddingMode paddingMode)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            using (var aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.Mode = cipherMode;
+                aes.Padding = paddingMode;
+
+                using (var ctf = aes.CreateEncryptor())
+                {
+                    var content = Encoding.UTF8.GetBytes(data);
+                    return Convert.ToBase64String(ctf.TransformFinalBlock(content, 0, content.Length));
+                }
+            }
+        }
+
+        public static string Decrypt(string data, string key, CipherMode cipherMode, PaddingMode paddingMode)
+        {
+            if (string.IsNullOrEmpty(data))
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            using (var aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.Mode = cipherMode;
+                aes.Padding = paddingMode;
+
+                using (var ctf = aes.CreateDecryptor())
+                {
+                    var content = Convert.FromBase64String(data);
+                    return Encoding.UTF8.GetString(ctf.TransformFinalBlock(content, 0, content.Length));
+                }
+            }
         }
     }
 }

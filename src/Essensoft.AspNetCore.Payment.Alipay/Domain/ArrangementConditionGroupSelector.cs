@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 是否选择最新的产品条件,默认为TRUE
         /// </summary>
-        [JsonProperty("select_latest_pd_cd")]
+        [JsonPropertyName("select_latest_pd_cd")]
         public bool SelectLatestPdCd { get; set; }
     }
 }

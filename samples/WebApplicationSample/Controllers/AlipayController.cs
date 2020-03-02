@@ -1,242 +1,412 @@
-﻿using Essensoft.AspNetCore.Payment.Alipay;
+﻿using System.Text;
+using System.Threading.Tasks;
+using Essensoft.AspNetCore.Payment.Alipay;
 using Essensoft.AspNetCore.Payment.Alipay.Domain;
 using Essensoft.AspNetCore.Payment.Alipay.Notify;
 using Essensoft.AspNetCore.Payment.Alipay.Request;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using WebApplicationSample.Models;
 
 namespace WebApplicationSample.Controllers
 {
     public class AlipayController : Controller
     {
-        private readonly AlipayClient _client = null;
-        private readonly AlipayNotifyClient _notifyClient = null;
+        private readonly IAlipayClient _client;
+        private readonly IAlipayNotifyClient _notifyClient;
+        private readonly IOptions<AlipayOptions> _optionsAccessor;
 
-        public AlipayController(AlipayClient client, AlipayNotifyClient notifyClient)
+        public AlipayController(IAlipayClient client, IAlipayNotifyClient notifyClient, IOptions<AlipayOptions> optionsAccessor)
         {
             _client = client;
             _notifyClient = notifyClient;
+            _optionsAccessor = optionsAccessor;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PagePay(string out_trade_no, string subject, string total_amount, string body, string product_code, string notify_url, string return_url)
+        /// <summary>
+        /// 支付宝指引页
+        /// </summary>
+        [HttpGet]
+        public IActionResult Index()
         {
-            var model = new AlipayTradePagePayModel()
-            {
-                Body = body,
-                Subject = subject,
-                TotalAmount = total_amount,
-                OutTradeNo = out_trade_no,
-                ProductCode = product_code,
-            };
-            var req = new AlipayTradePagePayRequest();
-            req.SetBizModel(model);
-            req.SetNotifyUrl(notify_url);
-            req.SetReturnUrl(return_url);
-
-            var response = await _client.PageExecuteAsync(req, null, "GET");
-            return Redirect(response.Body);
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> WapPay(string out_trade_no, string subject, string total_amount, string body, string product_code, string notify_url, string return_url)
+        /// <summary>
+        /// 当面付-扫码支付
+        /// </summary>
+        [HttpGet]
+        public IActionResult PreCreate()
         {
-            var model = new AlipayTradeWapPayModel()
-            {
-                Body = body,
-                Subject = subject,
-                TotalAmount = total_amount,
-                OutTradeNo = out_trade_no,
-                ProductCode = product_code,
-            };
-            var req = new AlipayTradeWapPayRequest();
-            req.SetBizModel(model);
-            req.SetNotifyUrl(notify_url);
-            req.SetReturnUrl(return_url);
-
-            var response = await _client.PageExecuteAsync(req, null, "GET");
-            return Redirect(response.Body);
+            return View();
         }
 
+        /// <summary>
+        /// 当面付-扫码支付
+        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> PreCreate(string out_trade_no, string subject, string total_amount, string body, string notify_url)
+        public async Task<IActionResult> PreCreate(AlipayTradePreCreateViewModel viewModel)
         {
-            var model = new AlipayTradePrecreateModel()
+            var model = new AlipayTradePrecreateModel
             {
-                Body = body,
-                Subject = subject,
-                TotalAmount = total_amount,
-                OutTradeNo = out_trade_no,
+                OutTradeNo = viewModel.OutTradeNo,
+                Subject = viewModel.Subject,
+                TotalAmount = viewModel.TotalAmount,
+                Body = viewModel.Body
             };
             var req = new AlipayTradePrecreateRequest();
             req.SetBizModel(model);
-            req.SetNotifyUrl(notify_url);
+            req.SetNotifyUrl(viewModel.NotifyUrl);
 
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["qrcode"] = response.QrCode;
+            ViewData["response"] = response.ResponseBody;
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Pay(string out_trade_no, string scene, string auth_code, string subject, string total_amount, string body, string notify_url)
+        /// <summary>
+        /// 当面付-二维码/条码/声波支付
+        /// </summary>
+        [HttpGet]
+        public IActionResult Pay()
         {
-            var model = new AlipayTradePayModel()
+            return View();
+        }
+
+        /// <summary>
+        /// 当面付-二维码/条码/声波支付
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Pay(AlipayTradePayViewModel viewModel)
+        {
+            var model = new AlipayTradePayModel
             {
-                Scene = scene,
-                AuthCode = auth_code,
-                Body = body,
-                Subject = subject,
-                TotalAmount = total_amount,
-                OutTradeNo = out_trade_no,
+                OutTradeNo = viewModel.OutTradeNo,
+                Subject = viewModel.Subject,
+                Scene = viewModel.Scene,
+                AuthCode = viewModel.AuthCode,
+                TotalAmount = viewModel.TotalAmount,
+                Body = viewModel.Body
             };
             var req = new AlipayTradePayRequest();
             req.SetBizModel(model);
-            req.SetNotifyUrl(notify_url);
 
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["response"] = response.ResponseBody;
+            return View();
         }
 
-
-        [HttpPost]
-        public async Task<IActionResult> Query(string out_trade_no, string trade_no)
+        /// <summary>
+        /// APP支付
+        /// </summary>
+        [HttpGet]
+        public IActionResult AppPay()
         {
-            var model = new AlipayTradeQueryModel()
+            return View();
+        }
+
+        /// <summary>
+        /// APP支付
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> AppPay(AlipayTradeAppPayViewModel viewModel)
+        {
+            var model = new AlipayTradeAppPayModel
             {
-                OutTradeNo = out_trade_no,
-                TradeNo = trade_no
+                OutTradeNo = viewModel.OutTradeNo,
+                Subject = viewModel.Subject,
+                ProductCode = viewModel.ProductCode,
+                TotalAmount = viewModel.TotalAmount,
+                Body = viewModel.Body
+            };
+            var req = new AlipayTradeAppPayRequest();
+            req.SetBizModel(model);
+            req.SetNotifyUrl(viewModel.NotifyUrl);
+
+            var response = await _client.SdkExecuteAsync(req, _optionsAccessor.Value);
+            //将response.ResponseBody给 ios/android端 由其去调起支付宝APP(https://docs.open.alipay.com/204/105296/ https://docs.open.alipay.com/204/105295/)
+            ViewData["response"] = response.ResponseBody;
+            return View();
+        }
+
+        /// <summary>
+        /// 电脑网站支付
+        /// </summary>
+        [HttpGet]
+        public IActionResult PagePay()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 电脑网站支付
+        /// </summary>
+        /// <param name="viewModel"></param>
+        [HttpPost]
+        public async Task<IActionResult> PagePay(AlipayTradePagePayViewModel viewModel)
+        {
+            var model = new AlipayTradePagePayModel
+            {
+                Body = viewModel.Body,
+                Subject = viewModel.Subject,
+                TotalAmount = viewModel.TotalAmount,
+                OutTradeNo = viewModel.OutTradeNo,
+                ProductCode = viewModel.ProductCode
+            };
+            var req = new AlipayTradePagePayRequest();
+            req.SetBizModel(model);
+            req.SetNotifyUrl(viewModel.NotifyUrl);
+            req.SetReturnUrl(viewModel.ReturnUrl);
+
+            var response = await _client.PageExecuteAsync(req, _optionsAccessor.Value);
+            return Content(response.ResponseBody, "text/html", Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 手机网站支付
+        /// </summary>
+        [HttpGet]
+        public IActionResult WapPay()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 手机网站支付
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> WapPay(AlipayTradeWapPayViewModel viewMode)
+        {
+            var model = new AlipayTradeWapPayModel
+            {
+                Body = viewMode.Body,
+                Subject = viewMode.Subject,
+                TotalAmount = viewMode.TotalAmount,
+                OutTradeNo = viewMode.OutTradeNo,
+                ProductCode = viewMode.ProductCode
+            };
+            var req = new AlipayTradeWapPayRequest();
+            req.SetBizModel(model);
+            req.SetNotifyUrl(viewMode.NotifyUrl);
+            req.SetReturnUrl(viewMode.ReturnUrl);
+
+            var response = await _client.PageExecuteAsync(req, _optionsAccessor.Value);
+            return Content(response.ResponseBody, "text/html", Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 交易查询
+        /// </summary>
+        [HttpGet]
+        public IActionResult Query()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 交易查询
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Query(AlipayTradeQueryViewModel viewMode)
+        {
+            var model = new AlipayTradeQueryModel
+            {
+                OutTradeNo = viewMode.OutTradeNo,
+                TradeNo = viewMode.TradeNo
             };
 
             var req = new AlipayTradeQueryRequest();
             req.SetBizModel(model);
 
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["response"] = response.ResponseBody;
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Refund(string out_trade_no, string trade_no, string refund_amount, string refund_reason, string out_request_no)
+        /// <summary>
+        /// 交易退款
+        /// </summary>
+        [HttpGet]
+        public IActionResult Refund()
         {
-            var model = new AlipayTradeRefundModel()
+            return View();
+        }
+
+        /// <summary>
+        /// 交易退款
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Refund(AlipayTradeRefundViewModel viewMode)
+        {
+            var model = new AlipayTradeRefundModel
             {
-                OutTradeNo = out_trade_no,
-                TradeNo = trade_no,
-                RefundAmount = refund_amount,
-                OutRequestNo = out_request_no,
-                RefundReason = refund_reason
+                OutTradeNo = viewMode.OutTradeNo,
+                TradeNo = viewMode.TradeNo,
+                RefundAmount = viewMode.RefundAmount,
+                OutRequestNo = viewMode.OutRequestNo,
+                RefundReason = viewMode.RefundReason
             };
 
             var req = new AlipayTradeRefundRequest();
             req.SetBizModel(model);
 
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["response"] = response.ResponseBody;
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> RefundQuery(string out_trade_no, string trade_no, string out_request_no)
+        /// <summary>
+        /// 退款查询
+        /// </summary>
+        [HttpGet]
+        public IActionResult RefundQuery()
         {
-            var model = new AlipayTradeFastpayRefundQueryModel()
+            return View();
+        }
+
+        /// <summary>
+        /// 退款查询
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> RefundQuery(AlipayTradeRefundQueryViewModel viewMode)
+        {
+            var model = new AlipayTradeFastpayRefundQueryModel
             {
-                OutTradeNo = out_trade_no,
-                TradeNo = trade_no,
-                OutRequestNo = out_request_no
+                OutTradeNo = viewMode.OutTradeNo,
+                TradeNo = viewMode.TradeNo,
+                OutRequestNo = viewMode.OutRequestNo
             };
 
             var req = new AlipayTradeFastpayRefundQueryRequest();
             req.SetBizModel(model);
 
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["response"] = response.ResponseBody;
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Close(string out_trade_no, string trade_no)
+        /// <summary>
+        /// 统一转账
+        /// </summary>
+        [HttpGet]
+        public IActionResult Transfer()
         {
-            var model = new AlipayTradeCloseModel()
+            return View();
+        }
+
+        /// <summary>
+        /// 统一转账
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> Transfer(AlipayTransferViewModel viewMode)
+        {
+            var model = new AlipayFundTransUniTransferModel
             {
-                OutTradeNo = out_trade_no,
-                TradeNo = trade_no,
+                OutBizNo = viewMode.OutBizNo,
+                TransAmount = viewMode.TransAmount,
+                ProductCode = viewMode.ProductCode,
+                BizScene = viewMode.BizScene,
+                PayeeInfo = new Participant { Identity = viewMode.PayeeIdentity, IdentityType = viewMode.PayeeIdentityType, Name = viewMode.PayeeName },
+                Remark = viewMode.Remark
+            };
+            var req = new AlipayFundTransUniTransferRequest();
+            req.SetBizModel(model);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["response"] = response.ResponseBody;
+            return View();
+        }
+
+        /// <summary>
+        /// 查询统一转账订单
+        /// </summary>
+        [HttpGet]
+        public IActionResult TransQuery()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 查询统一转账订单
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> TransQuery(AlipayTransQueryViewModel viewMode)
+        {
+            var model = new AlipayFundTransCommonQueryModel
+            {
+                OutBizNo = viewMode.OutBizNo,
+                OrderId = viewMode.OrderId
             };
 
-            var req = new AlipayTradeCloseRequest();
+            var req = new AlipayFundTransCommonQueryRequest();
             req.SetBizModel(model);
-
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["response"] = response.ResponseBody;
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Trans(string out_biz_no, string payee_account, string payee_type, string amount, string remark)
+        /// <summary>
+        /// 余额查询
+        /// </summary>
+        [HttpGet]
+        public IActionResult AccountQuery()
         {
-            var model = new AlipayFundTransToaccountTransferModel()
-            {
-                OutBizNo = out_biz_no,
-                PayeeType = payee_type,
-                PayeeAccount = payee_account,
-                Amount = amount,
-                Remark = remark
-            };
-            var req = new AlipayFundTransToaccountTransferRequest();
-            req.SetBizModel(model);
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            return View();
         }
 
+        /// <summary>
+        /// 余额查询
+        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> TransQuery(string out_biz_no, string order_id)
+        public async Task<IActionResult> AccountQuery(AlipayAccountQueryViewModel viewModel)
         {
-            var model = new AlipayFundTransOrderQueryModel()
+            var model = new AlipayFundAccountQueryModel
             {
-                OutBizNo = out_biz_no,
-                OrderId = order_id,
+                AlipayUserId = viewModel.AlipayUserId,
+                AccountType = viewModel.AccountType
             };
 
-            var req = new AlipayFundTransOrderQueryRequest();
+            var req = new AlipayFundAccountQueryRequest();
             req.SetBizModel(model);
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            ViewData["response"] = response.ResponseBody;
+            return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> BillDownloadurlQuery(string bill_date, string bill_type)
-        {
-            var model = new AlipayDataDataserviceBillDownloadurlQueryModel()
-            {
-                BillDate = bill_date,
-                BillType = bill_type
-            };
-
-            var req = new AlipayDataDataserviceBillDownloadurlQueryRequest();
-            req.SetBizModel(model);
-            var response = await _client.ExecuteAsync(req);
-            return Ok(response.Body);
-        }
-
+        /// <summary>
+        /// 电脑网站支付 - 同步跳转
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> PagePayReturn()
         {
             try
             {
-                var notify = await _notifyClient.ExecuteAsync<AlipayTradePagePayReturnResponse>(Request);
-                return Content("success", "text/plain");
+                var notify = await _notifyClient.ExecuteAsync<AlipayTradePagePayReturn>(Request, _optionsAccessor.Value);
+                ViewData["response"] = "支付成功";
+                return View();
             }
             catch
             {
-                return Content("error", "text/plain");
+                ViewData["response"] = "出现错误";
+                return View();
             }
         }
 
+        /// <summary>
+        /// 手机网站支付 - 同步跳转
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> WapPayReturn()
         {
             try
             {
-                var notify = await _notifyClient.ExecuteAsync<AlipayTradeWapPayReturnResponse>(Request);
-                return Content("success", "text/plain");
+                var notify = await _notifyClient.ExecuteAsync<AlipayTradeWapPayReturn>(Request, _optionsAccessor.Value);
+                ViewData["response"] = "支付成功";
+                return View();
             }
             catch
             {
-                return Content("error", "text/plain");
+                ViewData["response"] = "出现错误";
+                return View();
             }
         }
     }

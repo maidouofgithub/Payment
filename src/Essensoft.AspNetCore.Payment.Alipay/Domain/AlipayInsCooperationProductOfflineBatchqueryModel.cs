@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,7 +10,7 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 机构在蚂蚁平台上的惟一标识
         /// </summary>
-        [JsonProperty("inst_id")]
+        [JsonPropertyName("inst_id")]
         public string InstId { get; set; }
     }
 }

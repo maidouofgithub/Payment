@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Essensoft.AspNetCore.Payment.Alipay.Domain
 {
@@ -10,19 +10,19 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Domain
         /// <summary>
         /// 截至时间
         /// </summary>
-        [JsonProperty("end_time")]
+        [JsonPropertyName("end_time")]
         public string EndTime { get; set; }
 
         /// <summary>
         /// 发放次数限制
         /// </summary>
-        [JsonProperty("get_count_limit")]
+        [JsonPropertyName("get_count_limit")]
         public PeriodInfo GetCountLimit { get; set; }
 
         /// <summary>
         /// 开始时间
         /// </summary>
-        [JsonProperty("start_time")]
+        [JsonPropertyName("start_time")]
         public string StartTime { get; set; }
     }
 }

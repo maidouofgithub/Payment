@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Essensoft.AspNetCore.Payment.Alipay.Request
+namespace Essensoft.AspNetCore.Payment.Alipay
 {
     /// <summary>
-    /// Alipay请求接口。
+    /// Alipay 请求接口。
     /// </summary>
     public interface IAlipayRequest<T> where T : AlipayResponse
     {
-
         /// <summary>
         /// 获取Alipay的异步通知地址。
         /// </summary>
@@ -108,7 +107,6 @@ namespace Essensoft.AspNetCore.Payment.Alipay.Request
         /// <summary>
         /// 获取BizModel
         /// </summary>
-        /// <returns></returns>
         AlipayObject GetBizModel();
 
         /// <summary>

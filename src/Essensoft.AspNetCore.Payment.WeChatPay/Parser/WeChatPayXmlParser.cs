@@ -1,8 +1,6 @@
-﻿using Essensoft.AspNetCore.Payment.WeChatPay.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System;
+using System.IO;
+using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -10,78 +8,80 @@ namespace Essensoft.AspNetCore.Payment.WeChatPay.Parser
 {
     public class WeChatPayXmlParser<T> : IWeChatPayParser<T> where T : WeChatPayObject
     {
-        private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> DicProperties = new Dictionary<Type, Dictionary<string, PropertyInfo>>();
-
         public T Parse(string body)
         {
-            if (string.IsNullOrEmpty(body))
-                throw new ArgumentNullException(nameof(body));
-
-            if (!DicProperties.ContainsKey(typeof(T))) DicProperties[typeof(T)] = GetPropertiesMap(typeof(T));
-
-            var propertiesMap = DicProperties[typeof(T)];
-
-            var result = Activator.CreateInstance<T>();
-
-            result.Body = body;
-            var parameters = (result as WeChatPayObject).Parameters;
+            T result = null;
+            var parameters = new WeChatPayDictionary();
 
             try
             {
-                var doc = XDocument.Parse(body);
-                foreach (var elm in doc.Root.Elements())
+                var bodyDoc = XDocument.Parse(body).Element("xml");
+                foreach (var element in bodyDoc.Elements())
                 {
-                    parameters.Add(elm.Name.LocalName, elm.Value);
-                    if (propertiesMap.ContainsKey(elm.Name.LocalName))
-                        propertiesMap[elm.Name.LocalName].SetValue(result, elm.Value.TryTo(propertiesMap[elm.Name.LocalName].PropertyType));
+                    parameters.Add(element.Name.LocalName, element.Value);
+                }
+
+                using (var sr = new StringReader(body))
+                {
+                    var xmldes = new XmlSerializer(typeof(T));
+                    result = (T)xmldes.Deserialize(sr);
                 }
             }
-            catch
+            catch { }
+
+            if (result == null)
             {
-                // 解析XML出错
+                result = Activator.CreateInstance<T>();
             }
+
+            result.ResponseBody = body;
+            result.ResponseParameters = parameters;
+            result.Execute();
             return result;
         }
 
-        public T Parse(T result, string body)
+        public T Parse(string body, string root)
         {
-            if (string.IsNullOrEmpty(body))
-                throw new ArgumentNullException(nameof(body));
-
-            if (!DicProperties.ContainsKey(typeof(T))) DicProperties[typeof(T)] = GetPropertiesMap(typeof(T));
-
-            var propertiesMap = DicProperties[typeof(T)];
-            var parameters = (result as WeChatPayObject).Parameters;
+            T result = null;
+            var newBody = string.Empty;
+            var parameters = new WeChatPayDictionary();
 
             try
             {
-                var doc = XDocument.Parse(body);
-                foreach (var elm in doc.Root.Elements())
+                var bodyDoc = XDocument.Parse(body).Element("xml");
+                var rootDoc = XDocument.Parse(root).Element("root");
+                bodyDoc.Add(rootDoc.Nodes());
+                newBody = bodyDoc.ToString();
+
+                var sb = new StringBuilder();
+                using (var writer = new StringWriter(sb))
                 {
-                    parameters.Add(elm.Name.LocalName, elm.Value);
-                    if (propertiesMap.ContainsKey(elm.Name.LocalName))
-                        propertiesMap[elm.Name.LocalName].SetValue(result, elm.Value.TryTo(propertiesMap[elm.Name.LocalName].PropertyType));
+                    bodyDoc.Save(writer, SaveOptions.None);
+                }
+
+                foreach (var xe in bodyDoc.Elements())
+                {
+                    parameters.Add(xe.Name.LocalName, xe.Value);
+                }
+
+                using (var sr = new StringReader(sb.ToString()))
+                {
+                    var xmldes = new XmlSerializer(typeof(T));
+                    result = (T)xmldes.Deserialize(sr);
                 }
             }
-            catch
+            catch { }
+
+            if (result == null)
             {
-                // 解析XML出错
+                result = Activator.CreateInstance<T>();
             }
+
+            result.ResponseBody = newBody;
+            result.ResponseParameters = parameters;
+            result.Execute();
+
             return result;
-        }
-
-        private Dictionary<string, PropertyInfo> GetPropertiesMap(Type type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-            var propertiesMap = new Dictionary<string, PropertyInfo>();
-            var query = from e in typeof(T).GetProperties()
-                        where e.CanWrite && e.GetCustomAttributes(typeof(XmlElementAttribute), true).Any()
-                        select new { Property = e, Element = e.GetCustomAttributes(typeof(XmlElementAttribute), true).OfType<XmlElementAttribute>().First() };
-            foreach (var item in query)
-                propertiesMap.Add(item.Element.ElementName, item.Property);
-
-            return propertiesMap;
         }
     }
 }
